@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Display Jadwal Sholat - Masjid Jami' Baitul Muttaqin</title>
+
 <style>
 body{
   margin:0;
@@ -13,7 +14,8 @@ body{
   color:white;
   font-family:Arial, sans-serif;
   text-shadow:1px 2px 4px rgba(0,0,0,.7);
-}
+
+}	
 /* HEADER */
 #headerTop{
   display:grid;
@@ -24,17 +26,21 @@ body{
   border-radius:18px;
   margin-bottom:25px;
 }
+
 #jamDigital{
   font-size:4.2rem;
   font-weight:900;
   color:#00ffff;
   text-shadow:0 0 15px rgba(0,255,255,.9);
 }
+
 .header-center{text-align:center}
+
 #masjidName{
   font-size:2.6rem;
   font-weight:900;
 }
+
 /* ALAMAT BERJALAN */
 #alamatWrapper{
   overflow:hidden;
@@ -52,6 +58,7 @@ body{
   from{transform:translateX(0)}
   to{transform:translateX(-100%)}
 }
+
 .header-right{text-align:right}
 #tanggalDisplay{font-size:1.5rem}
 #hijriDisplay{font-size:1.4rem;color:#ffd966}
@@ -70,6 +77,7 @@ body{
   text-align:right;
   color:#ffd966;
 }
+
 /* TABLE */
 table{
   width:100%;
@@ -82,6 +90,7 @@ th,td{
   padding:12px;
   background:rgba(0,0,0,.4);
 }
+
 /* MARQUEE */
 #marqueeBox{
   background:rgba(0,0,0,.55);
@@ -100,114 +109,180 @@ th,td{
   from{transform:translateX(100%)}
   to{transform:translateX(-100%)}
 }
-/* OVERLAY FULL */
+
+/* ================= OVERLAY FULL SCREEN ================= */
 .overlay{
   position:fixed;
   inset:0;
+		 
+			 
+			  
   display:none;					 
   justify-content:center;
   align-items:center;
   z-index:99999;
+					
 }
 .overlay img{
 				  
+		 
   position:absolute;		  
   width:100%;
   height:100%;
   object-fit:cover;			
+		
+		 
 }
 /* BOX IQOMAH */
 .iqomah-box{
+				
   position:relative;			   							 		  				 
   text-align:center;
-  color:#00ffff;
+  color:black;
   z-index:2;
 }
 #iqomahCountdown{
   font-size:120px;
   font-weight:900;
+									   
+			
 }
 .iqomah-text{
   font-size:50px;
   letter-spacing:10px;
 }
+/* RESPONSIVE TV BESAR */
+  @media (min-width:1920px){
+  .countdown-text{
+    font-size:180px;
+  }
+}
 </style>
+
 <link rel="stylesheet" href="style.css">
+
 </head>
+
 <body>
+
 <!-- ================= HEADER ================= -->
-<div id="headerTop">										
+<div id="headerTop">
+
   <!-- JAM DIGITAL -->
   <div>
     <div id="jamDigital"></div>
   </div>
+
   <!-- NAMA MASJID + ALAMAT -->
   <div class="header-center">
     <div id="masjidName">
       MASJID JAMI'<br>BAITUL MUTTAQIN
     </div>
+
     <div id="alamatWrapper">
       <div id="alamatMasjid">
         Kp. MASJID, Kel. JOMBANG, CIPUTAT, TANGSEL
-      </div>			
+      </div>
     </div>
   </div>
+
+  <!-- TANGGAL -->
   <div class="header-right">
-    <marquee><div id="tanggalDisplay"></div></marquee>
+    <marquee>
+      <div id="tanggalDisplay"></div>
+    </marquee>
     <div id="hijriDisplay"></div>
   </div>
+
 </div>
-<!-- HARI BESAR ISLAM -->
+
+<!-- ================= HARI BESAR ISLAM ================= -->
 <div id="hariBesarBox">
   <span id="hariBesarText">Memuat hari besar Islam...</span>
- </div>
+</div>	   
 </div>
-  <button onclick="openFullscreen();">Klik untuk Full Screen</button>
+<body onclick="toggleFullscreen()">
+
+  <div style="text-align: left; margin-top: 30%;">
+    <h1>.</h1>
+    <p></p>
+  </div>
+
   <script>
-  var elem = document.documentElement;
-  function openFullscreen() {
-    if (elem.requestFullscreen) {
-      elem.requestFullscreen();
-    } else if (elem.webkitRequestFullscreen) { /* Chrome, Safari & Opera */
-      elem.webkitRequestFullscreen();
-    } else if (elem.msRequestFullscreen) { /* IE/Edge */
-      elem.msRequestFullscreen();
+    var elem = document.documentElement;
+
+    function toggleFullscreen() {
+      // Mengecek apakah layar sedang dalam mode Full Screen atau tidak
+      if (!document.fullscreenElement &&    // Standard syntax
+          !document.webkitFullscreenElement && // Chrome, Safari, Opera
+          !document.msFullscreenElement) {    // IE/Edge
+        
+        // JIKA TIDAK FULLSCREEN -> MASUK KE FULLSCREEN
+        if (elem.requestFullscreen) {
+          elem.requestFullscreen();
+        } else if (elem.webkitRequestFullscreen) {
+          elem.webkitRequestFullscreen();
+        } else if (elem.msRequestFullscreen) {
+          elem.msRequestFullscreen();
+        }
+        
+      } else {
+        
+        // JIKA SUDAH FULLSCREEN -> KELUAR DARI FULLSCREEN
+        if (document.exitFullscreen) {
+          document.exitFullscreen();
+        } else if (document.webkitExitFullscreen) {
+          document.webkitExitFullscreen();
+        } else if (document.msExitFullscreen) {
+          document.msExitFullscreen();
+        }
+        
+      }
     }
-  }
-</script>
+  </script>
 <!-- ================= JADWAL SHOLAT ================= -->
-<div class="footer-text">							  						 					  									 		
-  <div class="jadwal" id="jadwalTable">					  								 
+<div class="footer-text">
+
+  <div class="jadwal" id="jadwalTable">
+
     <div class="box imsak">
       <span>IMSAK</span>
       <strong id="imsak">--:--</strong>
     </div>
+
     <div class="box subuh">
       <span>SUBUH</span>
       <strong id="subuh">--:--</strong>
     </div>
+
     <div class="box dzuhur">
       <span>DZUHUR</span>
       <strong id="dzuhur">--:--</strong>
     </div>
+
     <div class="box ashar">
       <span>ASHAR</span>
       <strong id="ashar">--:--</strong>
     </div>
+
     <div class="box maghrib">
       <span>MAGHRIB</span>
       <strong id="maghrib">--:--</strong>
     </div>
+
     <div class="box isya">
       <span>ISYA</span>
       <strong id="isya">--:--</strong>
     </div>
+
   </div>
+
   <!-- ================= COUNTDOWN ================= -->
   <div class="countdown" id="countdown">
-    Memuat...											 
+    Memuat...
   </div>
-  <!-- ================= RUNNING TEXT ================= -->													 					 
+
+  <!-- ================= RUNNING TEXT ================= -->
   <div class="marquee">
     <span>
       “Sholat berjamaah lebih utama dua puluh tujuh derajat.”
@@ -216,16 +291,20 @@ th,td{
       Luruskan dan rapatkan shaf —
       Sesungguhnya sholat mencegah dari perbuatan keji dan mungkar —
       Jagalah kebersihan dan ketenangan masjid
-    </span>		   
+    </span>
   </div>
- </div> 
-<!-- ================= AUDIO ADZAN ================= -->
-<audio id="adzanAudio" src="beep.mp3"></audio>
-<!-- ADZAN -->
-<div id="adzanOverlay" class="overlay">
-  <img src="adzan.jpg" alt="Adzan">								 
+
 </div>
-<!-- IQOMAH -->
+
+<!-- AUDIO ADZAN -->
+<audio id="adzanAudio" src="beep.mp3"></audio>
+
+<!-- ================= OVERLAY ADZAN ================= -->
+<div id="adzanOverlay" class="overlay">
+  <img src="adzan.jpg" alt="Adzan">
+</div>
+
+<!-- ================= OVERLAY IQOMAH ================= -->
 <div id="iqomahOverlay" class="overlay">
   <img src="iqomah.jpg" alt="Iqomah">
   <div class="iqomah-box">
@@ -233,6 +312,7 @@ th,td{
     <div class="iqomah-text">MENJELANG IQOMAH</div>
   </div>
 </div>
+
 <!-- ================= SCRIPT JAM & TANGGAL ================= -->
 <script>
 setInterval(() => {
@@ -243,31 +323,39 @@ setInterval(() => {
   const hari = ["Minggu","Senin","Selasa","Rabu","Kamis","Jumat","Sabtu"];
   const bulan = ["Januari","Februari","Maret","April","Mei","Juni","Juli",
                  "Agustus","September","Oktober","November","Desember"];
+
   tanggalDisplay.textContent =
     `${hari[n.getDay()]}, ${n.getDate()} ${bulan[n.getMonth()]} ${n.getFullYear()}`;
+
   const hijriMonths = [
     "Muharram","Safar","Rabiul Awal","Rabiul Akhir",
     "Jumadil Awal","Jumadil Akhir",
     "Rajab","Sya'ban","Ramadhan",
     "Syawal","Dzulqaidah","Dzulhijjah"
   ];
+
  const d = new Date();
 d.setDate(d.getDate() - 1);
 const fmt = new Intl.DateTimeFormat(
   'id-ID-u-ca-islamic-umalqura',
   { day:'numeric', month:'numeric', year:'numeric', weekday:'long' }
 );
+
 const parts = fmt.formatToParts(d);
 const day = parts.find(p=>p.type==='day').value;
 const month = parts.find(p=>p.type==='month').value;
 const year = parts.find(p=>p.type==='year').value;
 const weekday = parts.find(p=>p.type==='weekday').value;
+
 document.getElementById("hijriDisplay").innerHTML =
   `${day} ${hijriMonths[month-1]} ${year} H`;
 },1000)  
 </script>
+
 <!-- ================= SCRIPT JADWAL SHOLAT ================= -->
+
 <script src="sudi_2026.js"></script>
+
 <script>
 /* ====== Parse CSV ====== */
 function parseCSV(text){
@@ -284,7 +372,9 @@ function parseCSV(text){
     return cells.map(c=>c.trim());
   });
 }
+
 const rows = parseCSV(rawData);
+
 /* ===== Cari hari ini ===== */
 function getTodayRow(){
   const now = new Date();
@@ -294,7 +384,9 @@ function getTodayRow(){
   const today = `${d}/${m}/${y}`;
   return rows.find(r => r[0].includes(today));
 }
+
 const today = getTodayRow();
+
 /* ===== Render ke BOX ===== */
 if(today){
   document.getElementById("imsak").textContent   = today[1];
@@ -303,6 +395,7 @@ if(today){
   document.getElementById("ashar").textContent   = today[4];
   document.getElementById("maghrib").textContent = today[5];
   document.getElementById("isya").textContent    = today[6];
+
   // buat dipakai adzan
   window.jadwal = {
     subuh:today[2],
@@ -319,8 +412,10 @@ if(today){
 <script>
 function updateCountdown(){
   if(!window.jadwal) return;
+
   const now   = new Date();
   const today = new Date();
+
   const list = [
     { n:"Subuh",   t: jadwal.subuh },
     { n:"Dzuhur",  t: jadwal.dzuhur },
@@ -328,7 +423,9 @@ function updateCountdown(){
     { n:"Maghrib", t: jadwal.maghrib },
     { n:"Isya",    t: jadwal.isya }
   ];
+
   let next = null;
+
   // cari sholat berikutnya hari ini
   list.forEach(j => {
     const [h,m] = j.t.split(":");
@@ -338,10 +435,12 @@ function updateCountdown(){
       today.getDate(),
       h, m, 0
     );
+
     if(d > now && !next){
       next = {...j, d};
     }
   });
+
   /* ===== JIKA SEMUA SHOLAT HARI INI SUDAH LEWAT ===== */
   if(!next){
     // ambil waktu Subuh BESOK
@@ -352,17 +451,20 @@ function updateCountdown(){
       today.getDate() + 1,
       h, m, 0
     );
+
     next = {
       n: "Subuh",
       d: besokSubuh
     };
   }
+
   /* ===== HITUNG SELISIH WAKTU ===== */
   const diff = next.d - now;
 
   const h = String(Math.floor(diff / 3600000)).padStart(2,"0");
   const m = String(Math.floor((diff % 3600000) / 60000)).padStart(2,"0");
   const s = String(Math.floor((diff % 60000) / 1000)).padStart(2,"0");
+
   countdown.textContent =
     `${next.n.toUpperCase()} :  ${h}: ${m}: ${s}`;
 }
@@ -370,7 +472,10 @@ function updateCountdown(){
 /* update tiap detik */
 setInterval(updateCountdown, 1000);
 updateCountdown();
-</script>   
+</script>
+
+
+
 <!-- ================= HARI BESAR ISLAM ================= -->
 <script>
 const hariBesar = [
@@ -382,32 +487,40 @@ const hariBesar = [
   {n:"Tahun Baru Islam",m:6,d:16},
   {n:"Maulid Nabi (ﷺ)",m:8,d:25}
 ];
+
 function updateHariBesar(){
   const now = new Date();
   let dekat = null, sel = 9999;
+
   hariBesar.forEach(h => {
     let t = new Date(now.getFullYear(), h.m-1, h.d);
     if (t < now) t.setFullYear(t.getFullYear()+1);
     let s = Math.ceil((t-now)/86400000);
     if (s < sel){ sel = s; dekat = h; }
   });
+
   hariBesarText.textContent =
     `${dekat.n} — ${sel} hari lagi`;
-}				 	
+}
+
 updateHariBesar();
 </script>
+
 <!-- ================= BACKGROUND SLIDE ================= -->
 <script>
 const bg = ["sudimara.jpg","masjid2.jpg"];
 let i = 0;
+
 setInterval(() => {
   document.body.style.backgroundImage = `url('${bg[i]}')`;
   i = (i+1) % bg.length;
 }, 15000);
 </script>
+
 <!-- ================= ADZAN AUDIO & IMAGE ================= -->
 <script>
 const waktuSholat = ["subuh","dzuhur","ashar","maghrib","isya"];
+
 let statusAdzan = {
   subuh:false,
   dzuhur:false,
@@ -415,65 +528,99 @@ let statusAdzan = {
   maghrib:false,
   isya:false
 };
+
 const adzanOverlay   = document.getElementById("adzanOverlay");
 const iqomahOverlay  = document.getElementById("iqomahOverlay");
 const iqomahCountdown= document.getElementById("iqomahCountdown");
 const adzanAudio     = document.getElementById("adzanAudio");
+
 let countdownInterval = null;
-let sedangProses = false; // supaya tidak double trigger												  											 
+let sedangProses = false; // supaya tidak double trigger
+
 /* ================= IQOMAH COUNTDOWN ================= */
 function mulaiIqomah(){
+
   let durasi = 10 * 60; // 10 menit
+
   iqomahOverlay.style.display = "flex";
+
   countdownInterval = setInterval(() => {
-  let menit = Math.floor(durasi / 60);
-  let detik = durasi % 60;
+
+    let menit = Math.floor(durasi / 60);
+    let detik = durasi % 60;
+
     iqomahCountdown.innerHTML =
       String(menit).padStart(2,'0') + ":" +
       String(detik).padStart(2,'0');
-    if(durasi <= 0){										  
+
+    if(durasi <= 0){
       clearInterval(countdownInterval);
       iqomahCountdown.innerHTML = "IQOMAH";
-     setTimeout(() => {
+
+      setTimeout(() => {
         iqomahOverlay.style.display = "none";
         sedangProses = false;
-      },2000);								   
+      },2000);
     }
+
     durasi--;
+
   },1000);
 }
+
 /* ================= CEK WAKTU SETIAP DETIK ================= */
-setInterval(() => {					
+setInterval(() => {
+
   if (!window.jadwal || sedangProses) return;
+
   const now = new Date();
   const jam =
     String(now.getHours()).padStart(2,'0') + ":" +
     String(now.getMinutes()).padStart(2,'0');
-  waktuSholat.forEach(w => { 
+
+  waktuSholat.forEach(w => {
+
     if (jadwal[w] === jam && !statusAdzan[w]) {
-     sedangProses = true;
+
+      sedangProses = true;
       statusAdzan[w] = true;
+
       /* TAMPILKAN ADZAN */
       adzanOverlay.style.display = "flex";
       adzanAudio.currentTime = 0;
       adzanAudio.play();
+
       /* 15 DETIK LALU MASUK IQOMAH */
       setTimeout(() => {
         adzanOverlay.style.display = "none";
         mulaiIqomah();
       },15000);
     }
+
   });
 
 },1000);
+
 /* ================= RESET STATUS SETIAP JAM 00:00 ================= */
 setInterval(() => {
   const now = new Date();
   if(now.getHours() === 0 && now.getMinutes() === 0){
-    waktuSholat.forEach(w => statusAdzan[w] = false);	 
+    waktuSholat.forEach(w => statusAdzan[w] = false);
   }
 },60000);
 </script>
 
 </body>
+
 </html>
+
+
+
+
+
+
+
+
+
+
+
