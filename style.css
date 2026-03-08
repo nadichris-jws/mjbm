@@ -40,7 +40,7 @@ body::before{
   border-radius:12px;
   font-size:1.1rem;
   font-weight:600;
-  color:#ff4d4d;
+  color:white;
   text-align:right;
   max-width:500px;
 }
@@ -114,4 +114,5 @@ body::before{
   text-align: center;
   padding: 10px;
 }
+
 
