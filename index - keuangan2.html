@@ -1,0 +1,704 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Display Jadwal Sholat - Masjid Jami' Baitul Muttaqin</title>
+
+<style>
+body{
+  margin:0;
+  padding:20px;
+  background:url("masjid2.jpg") no-repeat center center fixed;
+  background-size:cover;
+  color:white;
+  font-family:Arial, sans-serif;
+  text-shadow:1px 2px 4px rgba(0,0,0,.7);										  
+
+}	
+/* HEADER */
+#headerTop{
+  display:grid;
+  grid-template-columns:1fr 2fr 1fr;
+  align-items:center;
+  background:rgba(0,0,0,.45);
+  padding:15px 30px;
+  border-radius:18px;
+  margin-bottom:25px;
+}
+
+#jamDigital{
+  font-size:4.2rem;
+  font-weight:900;
+  color:#00ffff;
+  text-shadow:0 0 15px rgba(0,255,255,.9);
+}
+.kedip { animation: blink 1s steps(2, start) infinite; }
+        @keyframes blink { to { visibility: hidden; } 
+}
+.header-center{text-align:center}
+
+#masjidName{
+  font-size:2.6rem;
+  font-weight:900;
+}
+
+/* ALAMAT BERJALAN */
+#alamatWrapper{
+  overflow:hidden;
+  white-space:nowrap;
+  margin-top:6px;
+}
+#alamatMasjid{
+  display:inline-block;
+  padding-left:100%;
+  animation:alamatJalan 18s linear infinite;
+  font-size:1.3rem;
+  color:#ffeeaa;
+}
+@keyframes alamatJalan{
+  from{transform:translateX(0)}
+  to{transform:translateX(-100%)}
+}
+
+.header-right{text-align:right}
+#tanggalDisplay{font-size:1.5rem}
+#hijriDisplay{font-size:1.4rem;color:#ffd966}
+
+/* HARI BESAR */
+#hariBesarBox{
+  background:rgba(0,0,0,.55);
+  padding:12px 14px;
+  border-radius:12px;
+  position: fixed;
+  right:10px;
+  top:160px;
+  max-width:300px;
+  font-size:1rem;
+  font-weight:600;
+  text-align:right;
+  color:#ffd966;
+}
+/* ================= CSS LAPORAN KEUANGAN ================= */													
+.main-content {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}			   
+
+.finance-container {
+  position: absolute;
+  top: 250px;   /* sesuaikan */
+  left: 50px;  /* sesuaikan */
+
+  opacity: 0;
+  pointer-events: none;
+  transition: 0.3s ease;
+}
+
+.finance-container.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.finance-title {
+    font-size: 1.5rem;
+    color: #ffd966;
+    margin-bottom: 15px;
+  text-align: center;					 
+    text-transform: uppercase;
+    letter-spacing: 2px;
+  font-weight: bold;					
+}
+
+.finance-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+}
+
+.finance-box {
+    padding: 15px;
+    border-radius: 15px;
+  text-align: center;
+}
+
+.income { background: rgba(39, 174, 96, 0.7); border-bottom: 4px solid #27ae60; }
+.expense { background: rgba(231, 76, 60, 0.7); border-bottom: 4px solid #e74c3c; }
+.balance { background: rgba(41, 128, 185, 0.7); border-bottom: 4px solid #2980b9; }
+
+.finance-box .label { display: block; font-size: 1rem; font-weight: bold; margin-bottom: 10px; }
+.finance-box .amount { display: block; font-size: 1.8rem; font-weight: 900; }
+.footer-note { font-size: 0.85rem; color: white; font-style: italic; }
+
+
+
+/* TABLE */
+table{
+  width:100%;
+  max-width:700px;
+  margin:auto;
+  border-collapse:collapse;
+  font-size:1.4rem;
+}
+th,td{
+  padding:12px;
+  background:rgba(0,0,0,0.4);
+}
+
+/* MARQUEE */
+#marqueeBox{
+  background:rgba(0,0,0,.55);
+  padding:12px;
+  font-size:1.6rem;
+  margin-top:25px;
+  border-radius:8px;
+  overflow:hidden;
+}
+#marqueeText{
+  display:inline-block;
+  white-space:nowrap;
+  animation:jalan 18s linear infinite;
+}
+@keyframes jalan{
+  from{transform:translateX(100%)}
+  to{transform:translateX(-100%)}
+}
+
+/* ================= OVERLAY FULL SCREEN ================= */
+
+  .overlay {
+    position: fixed; inset: 0; display: none;
+    justify-content: center; align-items: center; z-index: 99999;
+  }
+  .overlay img { position: absolute; width: 100%; height: 100%; object-fit: cover; }
+  .overlay-content { position: relative; z-index: 2; text-align: center; color: black; text-shadow: none; }
+  .countdown-large { font-size: 150px; font-weight: 900; }
+  .overlay-text { font-size: 60px; font-weight: bold; letter-spacing: 5px; }
+
+
+</style>
+
+<link id="theme-link" rel="stylesheet" href="style.css">
+
+</head>
+
+<body>
+
+<!-- ================= HEADER ================= -->
+<div id="headerTop">
+
+  <!-- JAM DIGITAL -->
+  <div id="jamDigital">
+        <span id="hDisplay">00</span><span class="kedip">:</span><span id="mDisplay">00</span>
+    </div>
+
+  <!-- NAMA MASJID + ALAMAT -->
+  <div class="header-center">
+    <div id="masjidName">
+      MASJID JAMI'<br>BAITUL MUTTAQIN
+    </div>
+
+    <div id="alamatWrapper">
+      <div id="alamatMasjid">
+        Kp. MASJID, Kel. JOMBANG, CIPUTAT, TANGSEL
+      </div>
+    </div>
+  </div>
+
+  <!-- TANGGAL -->
+  <div class="header-right">
+      <div id="tanggalDisplay"></div>
+      <div id="hijriDisplay"></div>
+  </div>
+</div>
+
+<!-- ================= HARI BESAR ISLAM ================= -->
+<div id="hariBesarBox">
+  <span id="hariBesarText">Memuat hari besar Islam...</span>
+</div>
+<!-- ================= ISIAN LAPORAN KEUANGAN ================= -->
+
+<script>
+  document.addEventListener('keydown', (e) => {
+    if (e.key === '2') {
+      const financeBox = document.querySelector('.finance-container');
+      if (financeBox) {
+        financeBox.classList.toggle('active');
+      }
+    }
+  });
+</script>
+
+<div class="finance-container">
+    <div class="finance-title">Laporan Keuangan Masjid</div>
+    <div class="finance-grid">
+        <div class="finance-box income">
+            <span class="label">PEMASUKAN</span>
+            <span class="amount">Rp 2.500.000</span>
+        </div>
+        <div class="finance-box expense">
+            <span class="label">PENGELUARAN</span>
+            <span class="amount">Rp 1.200.000</span>
+        </div>
+        <div class="finance-box balance">
+            <span class="label">SALDO AKHIR</span>
+            <span class="amount">Rp 1.300.000</span>
+        </div>
+        <div class="footer-note">
+            *Update terakhir: 24 April 2026
+        </div>
+    </div>   
+</div>	   
+
+<script>
+  document.addEventListener('keydown', (e) => {
+    if (e.key === '1') {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen();
+      } else {
+        document.exitFullscreen();
+      }
+    }
+  });
+</script>
+<script>
+ /*  document.addEventListener('keydown', (e) => {
+    // Mengecek jika tombol yang ditekan adalah angka 7
+    if (e.key === '7') {
+      const theme = document.getElementById("theme-link");
+      const statusText = document.getElementById("status");
+
+      if (theme.getAttribute("href") === "style.css") {
+        theme.setAttribute("href", "style-K.css");
+        statusText.innerText = "style-K.css Aktif"; // Opsional: memberi tahu file mana yang aktif
+      } else {
+        theme.setAttribute("href", "style.css");
+        statusText.innerText = "style.css Aktif";
+      }
+    }
+  });
+*/
+</script>
+<!-- ================= JADWAL SHOLAT ================= -->
+<div class="footer-text">
+
+  <div class="jadwal" id="jadwalTable">
+
+    <div class="box imsak">
+      <span>IMSAK</span>
+      <strong id="imsak">--:--</strong>
+    </div>
+
+    <div class="box subuh">
+      <span>SUBUH</span>
+      <strong id="subuh">--:--</strong>
+    </div>
+
+    <div class="box dzuhur">
+      <span>DZUHUR</span>
+      <strong id="dzuhur">--:--</strong>
+    </div>
+
+    <div class="box ashar">
+      <span>ASHAR</span>
+      <strong id="ashar">--:--</strong>
+    </div>
+
+    <div class="box maghrib">
+      <span>MAGHRIB</span>
+      <strong id="maghrib">--:--</strong>
+    </div>
+
+    <div class="box isya">
+      <span>ISYA</span>
+      <strong id="isya">--:--</strong>
+    </div>
+
+  </div>
+
+  <!-- ================= COUNTDOWN ================= -->
+  <div class="countdown" id="countdown">
+    Memuat...
+  </div>
+
+  <!-- ================= RUNNING TEXT ================= -->
+  <div class="marquee">
+    <span>
+      “Sholat berjamaah lebih utama dua puluh tujuh derajat.”
+      (HR. Bukhari & Muslim) —
+      Mohon matikan atau silent handphone saat sholat berlangsung —
+      Luruskan dan rapatkan shaf —
+      Sesungguhnya sholat mencegah dari perbuatan keji dan mungkar —
+      Jagalah kebersihan dan ketenangan masjid
+    </span>
+  </div>
+
+</div>
+
+<!-- AUDIO ADZAN -->
+<audio id="adzanAudio" src="beep.mp3"></audio>
+
+<!-- ================= OVERLAY ADZAN ================= -->
+<div id="universalOverlay" class="overlay">
+  <img src="iqomah.jpg">
+  <div class="overlay-content">
+    <div id="overlayCountdown" class="countdown-large">00:00</div>
+    <div id="overlayStatus" class="overlay-text">MENUJU ADZAN</div>
+  </div>
+</div>
+
+<audio id="beepAudio" src="beep.mp3"></audio>
+
+
+<div id="iqomahOverlay" class="overlay">
+  <img src="iqomah.jpg">
+  <div class="iqomah-box-content">
+    <div id="iqomahCountdownDisplay" class="countdown-large">10:00</div>
+    <div class="iqomah-text">MENJELANG IQOMAH</div>
+  </div>
+</div>
+<!-- ================= tambah form ================= -->
+<div id="configModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.85); z-index:100000; justify-content:center; align-items:center;">
+  <div style="background:#f4f4f4; color:#333; padding:25px; border-radius:15px; width:400px; box-shadow:0 10px 30px rgba(0,0,0,0.5); font-family: sans-serif;">
+    <h3 style="margin-top:0; border-bottom:2px solid #ccc; padding-bottom:10px;">Pengaturan Tampilan</h3>
+    
+    <div style="margin-bottom:20px;">
+      <label style="display:block; font-weight:bold; margin-bottom:5px;">Teks Berjalan (Footer):</label>
+      <textarea id="inputMarquee" rows="3" style="width:100%; padding:8px; border:1px solid #ccc; border-radius:5px; box-sizing:border-box;"></textarea>
+    </div>
+
+    <div style="display:flex; gap:10px; justify-content: flex-end;">
+      <button onclick="tutupConfig()" style="padding:10px 20px; border:none; border-radius:5px; cursor:pointer; background:#ccc;">Batal</button>
+      <button onclick="simpanConfig()" style="padding:10px 20px; border:none; border-radius:5px; cursor:pointer; background:#007bff; color:white; font-weight:bold;">Simpan</button>
+    </div>
+  </div>
+</div>
+<!-- ================= SCRIPT JAM & TANGGAL ================= -->
+<script>
+setInterval(() => {
+  const n = new Date();
+           document.getElementById("hDisplay").textContent = String(n.getHours()).padStart(2, '0');
+        document.getElementById("mDisplay").textContent = String(n.getMinutes()).padStart(2, '0');
+
+  const hari = ["Minggu","Senin","Selasa","Rabu","Kamis","Jumat","Sabtu"];
+  const bulan = ["Januari","Februari","Maret","April","Mei","Juni","Juli",
+                 "Agustus","September","Oktober","November","Desember"];
+
+  tanggalDisplay.textContent =
+    `${hari[n.getDay()]}, ${n.getDate()} ${bulan[n.getMonth()]} ${n.getFullYear()}`;
+
+  const hijriMonths = [
+    "Muharram","Safar","Rabiul Awal","Rabiul Akhir",
+    "Jumadil Awal","Jumadil Akhir",
+    "Rajab","Sya'ban","Ramadhan",
+    "Syawal","Dzulqaidah","Dzulhijjah"
+  ];
+
+ const d = new Date();
+d.setDate(d.getDate() - 1);
+const fmt = new Intl.DateTimeFormat(
+  'id-ID-u-ca-islamic-umalqura',
+  { day:'numeric', month:'numeric', year:'numeric', weekday:'long' }
+);
+
+const parts = fmt.formatToParts(d);
+const day = parts.find(p=>p.type==='day').value;
+const month = parts.find(p=>p.type==='month').value;
+const year = parts.find(p=>p.type==='year').value;
+const weekday = parts.find(p=>p.type==='weekday').value;
+
+document.getElementById("hijriDisplay").innerHTML =
+  `${day} ${hijriMonths[month-1]} ${year} H`;
+},1000)  
+</script>
+
+<!-- ================= SCRIPT JADWAL SHOLAT ================= -->
+
+<script src="sudi_2026.js"></script>
+
+<script>
+/* ====== Parse CSV ====== */
+function parseCSV(text){
+  const lines = text.split(/\r?\n/).filter(l=>l.trim()!=="");
+  lines.shift();
+  return lines.map(line=>{
+    const cells=[], cur={v:"",q:false};
+    for(let c of line){
+      if(c=='"'){cur.q=!cur.q;continue;}
+      if(c==',' && !cur.q){cells.push(cur.v);cur.v='';continue;}
+      cur.v+=c;
+    }
+    cells.push(cur.v);
+    return cells.map(c=>c.trim());
+  });
+}
+
+const rows = parseCSV(rawData);
+
+/* ===== Cari hari ini ===== */
+function getTodayRow(){
+  const now = new Date();
+  const d = String(now.getDate()).padStart(2,'0');
+  const m = String(now.getMonth()+1).padStart(2,'0');
+  const y = now.getFullYear();
+  const today = `${d}/${m}/${y}`;
+  return rows.find(r => r[0].includes(today));
+}
+
+const today = getTodayRow();
+
+/* ===== Render ke BOX ===== */
+if(today){
+  document.getElementById("imsak").textContent   = today[1];
+  document.getElementById("subuh").textContent   = today[2];
+  document.getElementById("dzuhur").textContent  = today[3];
+  document.getElementById("ashar").textContent   = today[4];
+  document.getElementById("maghrib").textContent = today[5];
+  document.getElementById("isya").textContent    = today[6];
+
+  // buat dipakai adzan
+  window.jadwal = {
+    subuh:today[2],
+    dzuhur:today[3],
+    ashar:today[4],
+    maghrib:today[5],
+    isya:today[6]
+  };
+}else{
+  console.warn("Jadwal hari ini tidak ditemukan");
+}
+</script>
+<!-- ================= MENUJU WAKTU ================= -->
+<script>
+function updateCountdown(){
+  if(!window.jadwal) return;
+
+  const now   = new Date();
+  const today = new Date();
+
+  const list = [
+    { n:"Subuh",   t: jadwal.subuh },
+    { n:"Dzuhur",  t: jadwal.dzuhur },
+    { n:"Ashar",   t: jadwal.ashar },
+    { n:"Maghrib", t: jadwal.maghrib },
+    { n:"Isya",    t: jadwal.isya }
+  ];
+
+  let next = null;
+
+  // cari sholat berikutnya hari ini
+  list.forEach(j => {
+    const [h,m] = j.t.split(":");
+    const d = new Date(
+      today.getFullYear(),
+      today.getMonth(),
+      today.getDate(),
+      h, m, 0
+    );
+
+    if(d > now && !next){
+      next = {...j, d};
+    }
+  });
+
+  /* ===== JIKA SEMUA SHOLAT HARI INI SUDAH LEWAT ===== */
+  if(!next){
+    // ambil waktu Subuh BESOK
+    const [h,m] = jadwal.subuh.split(":");
+    const besokSubuh = new Date(
+      today.getFullYear(),
+      today.getMonth(),
+      today.getDate() + 1,
+      h, m, 0
+    );
+
+    next = {
+      n: "Subuh",
+      d: besokSubuh
+    };
+  }
+
+  /* ===== HITUNG SELISIH WAKTU ===== */
+  const diff = next.d - now;
+  const totalDetik = Math.floor(diff / 1000);											 
+const h = String(Math.floor(diff / 3600000)).padStart(2,"0");
+  const m = String(Math.floor((diff % 3600000) / 60000)).padStart(2,"0");
+  const s = String(Math.floor((diff % 60000) / 1000)).padStart(2,"0");
+
+  countdown.textContent =
+    `${next.n.toUpperCase()} :  ${h}: ${m}: ${s}`;
+
+  /* LOGIKA 5 MENIT MENJELANG ADZAN */
+  const overlay = document.getElementById("universalOverlay");
+  const overlayCD = document.getElementById("overlayCountdown");
+  const overlayStatus = document.getElementById("overlayStatus");
+  const beep = document.getElementById("beepAudio");
+
+  // 1. Menuju Adzan (5 Menit sebelum)
+  if (totalDetik <= 300 && totalDetik > 0) {
+    overlay.style.display = "flex";
+    overlayStatus.textContent = "MENUJU ADZAN";
+    overlayCD.textContent = `${m}:${s}`;
+  } 
+  // 2. Saat Adzan (Beep 5 detik)
+  else if (totalDetik === 0) {
+    beep.play();
+    overlay.style.display = "none";
+    // Trigger Mode Iqomah setelah 5 detik adzan selesai
+    setTimeout(() => { modeIqomahActive = true; window.iqomahEnd = new Date().getTime() + 600000; }, 5000);
+  }
+  // 3. Menuju Iqomah (10 Menit setelah Adzan)
+  else if (modeIqomahActive) {
+    const iqomahDiff = window.iqomahEnd - new Date().getTime();
+    if (iqomahDiff > 0) {
+      overlay.style.display = "flex";
+      overlayStatus.textContent = "MENUJU IQOMAH";
+      const im = String(Math.floor(iqomahDiff / 60000)).padStart(2,"0");
+      const is = String(Math.floor((iqomahDiff % 60000) / 1000)).padStart(2,"0");
+      overlayCD.textContent = `${im}:${is}`;
+    } else {
+      overlay.style.display = "none";
+      modeIqomahActive = false;
+    }
+  }
+  else {
+    overlay.style.display = "none";
+  }
+}
+
+setInterval(updateCountdown, 1000);
+</script>
+
+
+
+<!-- ================= HARI BESAR ISLAM ================= -->
+<script>
+const hariBesar = [
+  {n:"Isra Mi'raj Nabi (ﷺ)",m:1,d:16},
+  {n:"Awal Ramadhan",m:2,d:19},
+  {n:"Nuzulul Qur'an",m:3,d:7},
+  {n:"Idul Fitri",m:3,d:20},
+  {n:"Idul Adha",m:5,d:27},
+  {n:"Tahun Baru Islam",m:6,d:16},
+  {n:"Maulid Nabi (ﷺ)",m:8,d:25}
+];
+
+function updateHariBesar(){
+  const now = new Date();
+  let dekat = null, sel = 9999;
+
+  hariBesar.forEach(h => {
+    let t = new Date(now.getFullYear(), h.m-1, h.d);
+    if (t < now) t.setFullYear(t.getFullYear()+1);
+    let s = Math.ceil((t-now)/86400000);
+    if (s < sel){ sel = s; dekat = h; }
+  });
+
+  hariBesarText.textContent =
+    `${dekat.n} — ${sel} hari lagi`;
+}
+
+updateHariBesar();
+</script>
+<script>
+  // Event listener untuk tombol angka 9
+  document.addEventListener('keydown', (e) => {
+    if (e.key === '9') {
+      const modal = document.getElementById("configModal");
+      if (modal.style.display === "none") {
+        // Isi form dengan data yang saat ini ada di layar sebelum ditampilkan
+        document.getElementById("inputMarquee").value = document.querySelector(".marquee span").innerText;
+        
+        modal.style.display = "flex";
+      } else {
+        tutupConfig();
+      }
+    }
+  });
+
+  function tutupConfig() {
+    document.getElementById("configModal").style.display = "none";
+  }
+
+  function simpanConfig() {
+    const marqueeBaru = document.getElementById("inputMarquee").value;
+
+    // Update tampilan secara langsung
+    if(marqueeBaru) document.querySelector(".marquee span").innerText = marqueeBaru;
+
+    // Simpan ke LocalStorage agar tidak hilang saat refresh halaman
+    localStorage.setItem("marqueeTeks", marqueeBaru);
+
+    tutupConfig();
+    alert("Pengaturan berhasil disimpan!");
+  }
+
+  // Load data dari LocalStorage saat halaman pertama kali dibuka
+  window.addEventListener('load', () => {
+    const sMarquee = localStorage.getItem("marqueeTeks");
+    if(sMarquee) document.querySelector(".marquee span").innerText = sMarquee;
+  });
+</script>
+
+<script>
+  // Event listener untuk tombol angka 0 (Reset)
+  document.addEventListener('keydown', (e) => {
+    if (e.key === '0') {
+      const konfirmasi = confirm("Apakah Anda yakin ingin mereset tampilan ke pengaturan awal?");
+      if (konfirmasi) {
+        // 1. Hapus semua data yang tersimpan di LocalStorage
+        localStorage.removeItem("marqueeTeks");
+
+        // 2. Refresh halaman untuk mengembalikan nilai asli dari kode HTML
+        location.reload();
+      }
+    }
+  });
+</script>
+<!-- ================= BACKGROUND SLIDE ================= -->
+<script>
+const bg = ["masjid2.jpg"];
+let i = 0;
+
+setInterval(() => {
+  document.body.style.backgroundImage = `url('${bg[i]}')`;
+  i = (i+1) % bg.length;
+}, 15000);
+</script>
+
+
+<script>
+setInterval(() => {
+  if (!window.jadwal || sedangProses) return;
+  const now = new Date();
+  const jamSekarang = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+
+  ["subuh","dzuhur","ashar","maghrib","isya"].forEach(w => {
+    if (window.jadwal[w] === jamSekarang && !statusAdzan[w]) {
+      sedangProses = true;
+      statusAdzan[w] = true;
+      document.getElementById("preAdzanOverlay").style.display = "none";
+      document.getElementById("adzanOverlay").style.display = "flex";
+      document.getElementById("adzanAudio").play().catch(e => {});
+      
+      setTimeout(mulaiIqomah, 15000); 
+    }
+  });
+}, 1000);
+
+/* Reset harian */
+setInterval(() => {
+  const n = new Date();
+  if(n.getHours() === 0 && n.getMinutes() === 0) statusAdzan = {};
+}, 60000);
+</script>
+
+</body>
+
+</html>
+
+
+
+
