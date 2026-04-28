@@ -169,14 +169,27 @@ th,td{
 /* ================= OVERLAY FULL SCREEN ================= */
 
   .overlay {
-    position: fixed; inset: 0; display: none;
-    justify-content: center; align-items: center; z-index: 99999;
-  }
-  .overlay img { position: absolute; width: 100%; height: 100%; object-fit: cover; }
-  .overlay-content { position: relative; z-index: 2; text-align: center; color: black; text-shadow: none; }
-  .countdown-large { font-size: 150px; font-weight: 900; }
-  .overlay-text { font-size: 60px; font-weight: bold; letter-spacing: 5px; }
+  position: fixed;
+  inset: 0;
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 99999;
+}
 
+.overlay-bg {
+  position: absolute;
+  inset: 0;
+  background: url("iqomah.jpg") center/cover no-repeat;
+  filter: brightness(0.5);
+}
+
+.overlay-content {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+  color: white;
+}
 
 </style>
 
@@ -342,18 +355,25 @@ th,td{
 
 <!-- ================= OVERLAY ADZAN ================= -->
 <div id="universalOverlay" class="overlay">
-  <img src="iqomah.jpg">
+  <div class="overlay-bg"></div>
   <div class="overlay-content">
     <div id="overlayCountdown" class="countdown-large">00:00</div>
     <div id="overlayStatus" class="overlay-text">MENUJU ADZAN</div>
   </div>
 </div>
-
+<!-- OVERLAY JUMAT -->
+<div id="jumatOverlay" class="overlay">
+  <div class="overlay-bg"></div>
+  <div class="overlay-content">
+    <div id="jumatCountdown" class="countdown-large">00:00</div>
+    <div class="overlay-text">KHUTBAH AKAN DIMULAI</div>
+  </div>
+</div>
 <audio id="beepAudio" src="beep.mp3"></audio>
 
 
 <div id="iqomahOverlay" class="overlay">
-  <img src="iqomah.jpg">
+  <div class="overlay-bg"></div>
   <div class="iqomah-box-content">
     <div id="iqomahCountdownDisplay" class="countdown-large">10:00</div>
     <div class="iqomah-text">MENJELANG IQOMAH</div>
@@ -472,6 +492,11 @@ if(today){
 </script>
 <!-- ================= MENUJU WAKTU ================= -->
 <script>
+let modeIqomahActive = false;
+let sedangProses = false;
+let statusAdzan = {};
+const hariIni = new Date().getDay(); // 0 = Minggu, 5 = Jumat
+
 function updateCountdown(){
   if(!window.jadwal) return;
 
@@ -527,44 +552,63 @@ const h = String(Math.floor(diff / 3600000)).padStart(2,"0");
   const m = String(Math.floor((diff % 3600000) / 60000)).padStart(2,"0");
   const s = String(Math.floor((diff % 60000) / 1000)).padStart(2,"0");
 
-  countdown.textContent =
-    `${next.n.toUpperCase()} :  ${h}: ${m}: ${s}`;
+  const countdownElement = document.getElementById("countdown");
+  if(countdownElement) countdownElement.textContent = `${next.n.toUpperCase()} :  ${h}: ${m}: ${s}`;
 
-  /* LOGIKA 5 MENIT MENJELANG ADZAN */
+  /* LOGIKA OVERLAY */
   const overlay = document.getElementById("universalOverlay");
   const overlayCD = document.getElementById("overlayCountdown");
   const overlayStatus = document.getElementById("overlayStatus");
+  const jumatOverlay = document.getElementById("jumatOverlay");
+  const jumatCD = document.getElementById("jumatCountdown");
   const beep = document.getElementById("beepAudio");
 
-  // 1. Menuju Adzan (5 Menit sebelum)
-  if (totalDetik <= 300 && totalDetik > 0) {
-    overlay.style.display = "flex";
-    overlayStatus.textContent = "MENUJU ADZAN";
-    overlayCD.textContent = `${m}:${s}`;
-  } 
-  // 2. Saat Adzan (Beep 5 detik)
-  else if (totalDetik === 0) {
-    beep.play();
-    overlay.style.display = "none";
-    // Trigger Mode Iqomah setelah 5 detik adzan selesai
-    setTimeout(() => { modeIqomahActive = true; window.iqomahEnd = new Date().getTime() + 600000; }, 5000);
+  // Reset tampilan overlay setiap detik agar tidak menumpuk
+  overlay.style.display = "none";
+  jumatOverlay.style.display = "none";
+
+  // 1. 5 MENIT MENJELANG ADZAN
+  if(totalDetik <= 300 && totalDetik > 0){
+    if(hariIni === 5 && next.n === "Dzuhur"){
+      jumatOverlay.style.display = "flex";
+      jumatCD.textContent = `${m}:${s}`;
+    } else {
+      overlay.style.display = "flex";
+      overlayStatus.textContent = "MENUJU ADZAN";
+      overlayCD.textContent = `${m}:${s}`;
+    }
   }
-  // 3. Menuju Iqomah (10 Menit setelah Adzan)
-  else if (modeIqomahActive) {
-    const iqomahDiff = window.iqomahEnd - new Date().getTime();
-    if (iqomahDiff > 0) {
+
+  // 2. TEPAT WAKTU ADZAN (0 detik)
+  else if(totalDetik === 0){
+    if(beep) beep.play();
+    
+    if(hariIni === 5 && next.n === "Dzuhur"){
+      // Mode Jumat: Tampilkan overlay khutbah lebih lama tanpa iqomah
+      modeIqomahActive = false;
+      jumatOverlay.style.display = "flex";
+    } else {
+      // Mode Biasa: Aktifkan hitung mundur iqomah setelah 5 detik adzan
+      setTimeout(()=>{
+        modeIqomahActive = true;
+        window.iqomahEnd = new Date().getTime() + 600000; // 10 menit
+      }, 5000);
+    }
+  }
+
+  // 3. LOGIKA IQOMAH (Jika aktif)
+  else if(modeIqomahActive){
+    const sisa = window.iqomahEnd - new Date().getTime();
+    if(sisa > 0){
       overlay.style.display = "flex";
       overlayStatus.textContent = "MENUJU IQOMAH";
-      const im = String(Math.floor(iqomahDiff / 60000)).padStart(2,"0");
-      const is = String(Math.floor((iqomahDiff % 60000) / 1000)).padStart(2,"0");
+      const im = String(Math.floor(sisa/60000)).padStart(2,"0");
+      const is = String(Math.floor((sisa%60000)/1000)).padStart(2,"0");
       overlayCD.textContent = `${im}:${is}`;
     } else {
       overlay.style.display = "none";
       modeIqomahActive = false;
     }
-  }
-  else {
-    overlay.style.display = "none";
   }
 }
 
@@ -667,6 +711,42 @@ setInterval(() => {
   i = (i+1) % bg.length;
 }, 15000);
 </script>
+
+
+<script>
+setInterval(() => {
+  if (!window.jadwal || sedangProses) return;
+  const now = new Date();
+  const jamSekarang = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+
+  ["subuh","dzuhur","ashar","maghrib","isya"].forEach(w => {
+    if (window.jadwal[w] === jamSekarang && !statusAdzan[w]) {
+      sedangProses = true;
+      statusAdzan[w] = true;
+      document.getElementById("preAdzanOverlay").style.display = "none";
+      document.getElementById("adzanOverlay").style.display = "flex";
+      document.getElementById("adzanAudio").play().catch(e => {});
+      
+      setTimeout(mulaiIqomah, 15000); 
+    }
+  });
+}, 1000);
+
+/* Reset harian */
+setInterval(() => {
+  const n = new Date();
+  if(n.getHours() === 0 && n.getMinutes() === 0) statusAdzan = {};
+}, 60000);
+</script>
+
+</body>
+
+</html>
+
+
+
+
+
 
 
 <script>
