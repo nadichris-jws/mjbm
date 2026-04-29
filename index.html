@@ -286,15 +286,14 @@ th,td{
 </div>	   
 
 <script>
-  document.addEventListener('keydown', (e) => {
-    if (e.key === '1') {
-      if (!document.fullscreenElement) {
-        document.documentElement.requestFullscreen();
-      } else {
-        document.exitFullscreen();
-      }
-    }
-  });
+  // Menambahkan listener untuk menekan tombol OK pada remote
+document.addEventListener('keydown', function(event) {
+  // 'Enter' adalah standar untuk tombol OK/Select di sebagian besar remote
+  // 13 adalah keyCode standar untuk Enter
+  if (event.key === 'Enter' || event.keyCode === 13) {
+    toggleFullscreen();
+  }
+});
 </script>
 <script>
  /*  document.addEventListener('keydown', (e) => {
