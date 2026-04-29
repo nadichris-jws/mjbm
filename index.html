@@ -169,26 +169,46 @@ th,td{
 /* ================= OVERLAY FULL SCREEN ================= */
 
   .overlay {
-  position: fixed;
-  inset: 0;
-  display: none;
-  justify-content: center;
-  align-items: center;
-  z-index: 99999;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    display: none; /* Akan diubah jadi 'flex' lewat JS */
+    justify-content: center;
+    align-items: center;
+    z-index: 999999; /* Pastikan angka ini paling tinggi */
 }
 
 .overlay-bg {
-  position: absolute;
-  inset: 0;
-  background: url("iqomah.jpg") center/cover no-repeat;
-  filter: brightness(0.5);
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: url("iqomah.jpg") no-repeat center center;
+    background-size: cover; /* Ini kunci agar gambar memenuhi layar */
+    filter: brightness(0.4); /* Menggelapkan gambar agar teks terbaca */
+    z-index: -1;
 }
 
 .overlay-content {
-  position: relative;
-  z-index: 2;
-  text-align: center;
-  color: white;
+    text-align: center;
+    color: white;
+}
+
+.countdown-large {
+    font-size: 12rem; /* Ukuran jam diperbesar agar dramatis */
+    font-weight: 900;
+    color: #ffffff;
+    text-shadow: 0 0 30px rgba(0,0,0,1);
+}
+
+.overlay-text {
+    font-size: 4rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 5px;
 }
 
 </style>
