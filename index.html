@@ -286,16 +286,28 @@ th,td{
 </div>	   
 
 <script>
-  // Menambahkan listener untuk menekan tombol OK pada remote
-document.addEventListener('keydown', function(event) {
-  // 'Enter' adalah standar untuk tombol OK/Select di sebagian besar remote
-  // 13 adalah keyCode standar untuk Enter
-  if (event.key === 'Enter' || event.keyCode === 13) {
-    toggleFullscreen();
+  document.addEventListener('keydown', (e) => {
+    if (e.key === '1') {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen();
+      } else {
+        document.exitFullscreen();
+      }
+    }
+  });
+
+  document.addEventListener('keydown', (e) => {
+  // 'Enter' adalah standar untuk tombol OK di remote STB
+  if (e.key === 'Enter' || e.keyCode === 13) {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen().catch(err => {
+        console.error(`Gagal masuk mode layar penuh: ${err.message}`);
+      });
+    } else {
+      document.exitFullscreen();
+    }
   }
 });
-</script>
-<script>
  /*  document.addEventListener('keydown', (e) => {
     // Mengecek jika tombol yang ditekan adalah angka 7
     if (e.key === '7') {
@@ -762,41 +774,6 @@ setInterval(() => {
 
 </html>
 
-
-
-
-
-
-
-<script>
-setInterval(() => {
-  if (!window.jadwal || sedangProses) return;
-  const now = new Date();
-  const jamSekarang = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
-
-  ["subuh","dzuhur","ashar","maghrib","isya"].forEach(w => {
-    if (window.jadwal[w] === jamSekarang && !statusAdzan[w]) {
-      sedangProses = true;
-      statusAdzan[w] = true;
-      document.getElementById("preAdzanOverlay").style.display = "none";
-      document.getElementById("adzanOverlay").style.display = "flex";
-      document.getElementById("adzanAudio").play().catch(e => {});
-      
-      setTimeout(mulaiIqomah, 15000); 
-    }
-  });
-}, 1000);
-
-/* Reset harian */
-setInterval(() => {
-  const n = new Date();
-  if(n.getHours() === 0 && n.getMinutes() === 0) statusAdzan = {};
-}, 60000);
-</script>
-
-</body>
-
-</html>
 
 
 
