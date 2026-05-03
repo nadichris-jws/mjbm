@@ -607,7 +607,7 @@ const h = String(Math.floor(diff / 3600000)).padStart(2,"0");
       overlay.style.display = "flex";
       overlayStatus.textContent = "MENUJU ADZAN";
       overlayCD.textContent = `${m}:${s}`;
-      overlayCD.textContent.color = "black"; 
+      overlayCD.style.color = "black"; 
     }
   }
 
@@ -634,6 +634,7 @@ const h = String(Math.floor(diff / 3600000)).padStart(2,"0");
     if(sisa > 0){
       overlay.style.display = "flex";
       overlayStatus.textContent = "MENUJU IQOMAH";
+      overlayStatus.style.color = "black";
       const im = String(Math.floor(sisa/60000)).padStart(2,"0");
       const is = String(Math.floor((sisa%60000)/1000)).padStart(2,"0");
       overlayCD.textContent = `${im}:${is}`;
